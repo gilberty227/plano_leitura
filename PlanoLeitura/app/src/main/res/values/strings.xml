@@ -7,6 +7,14 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Tutorial -->
+    <string name="tutorial_first_title">Bem vindo</string>
+    <string name="tutorial_first_message">Olá, que bom ver você dando este primeiro\npasso, isso já mostra o seu interesse\nem querer conhecer mais a Deus.</string>
+    <string name="tutorial_second_title">Planejamento</string>
+    <string name="tutorial_second_message">Agora é questão de analisar o plano de\nleitura que mais se encaixa com seu\n perfil e colocar ele em prática.</string>
+    <string name="tutorial_third_title">Busca em Deus</string>
+    <string name="tutorial_third_message">Conhecer a palavra é o que temos de mais\n valioso, então coloque como objetivo\n e leia mesmo que seja por disciplina\n inicialmente até que você leia por puro\nprazer de conhecer a Deus.</string>
+
     <!-- Months -->
     <string name="january">January</string>
     <string name="february">February</string>

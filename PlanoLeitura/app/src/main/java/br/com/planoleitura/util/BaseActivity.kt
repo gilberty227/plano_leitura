@@ -147,7 +147,6 @@ abstract class BaseActivity : AppCompatActivity() {
     companion object {
 
         val ARG_CREATED_BEFORE = "arg_created_before"
-
         val TAG = BaseActivity::class.java.simpleName
     }
 }

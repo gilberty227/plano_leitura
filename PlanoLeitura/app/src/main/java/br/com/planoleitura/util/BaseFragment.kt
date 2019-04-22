@@ -12,7 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import br.com.planoleitura.R
 
-class BaseFragment : Fragment() {
+@Suppress("MemberVisibilityCanBePrivate")
+open class BaseFragment : Fragment() {
+
     protected var mContext: Context? = null
     protected var mSaveStateExecuted = false
 
@@ -36,58 +38,15 @@ class BaseFragment : Fragment() {
         mContext = context
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        mSaveStateExecuted = false
-    }
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        mSaveStateExecuted = true
-
-        super.onSaveInstanceState(outState)
-    }
-
     protected fun clearBackStack() {
         val manager = fragmentManager
 
-        if (manager != null) {
-            while (manager.backStackEntryCount > 0)
-                manager.popBackStackImmediate()
-        }
+        while ((manager?.backStackEntryCount?:0) > 0)
+            manager?.popBackStackImmediate()
     }
 
-    @JvmOverloads
-    protected fun switchToFragment(
-        frag: Fragment,
-        containerId: Int,
-        addToBackStack: Boolean,
-        replace: Boolean = false
-    ) {
+    protected fun switchToFragment(frag: Fragment,
+        containerId: Int, addToBackStack: Boolean, replace: Boolean = false) {
         if (isActivityValid) {
             val fm = activity!!.supportFragmentManager
             val fragment = fm.findFragmentById(containerId)
@@ -109,17 +68,6 @@ class BaseFragment : Fragment() {
         }
     }
 
-    fun dismissDialogWithTag(tag: String) {
-        val fm = fragmentManager
-
-        if (fm != null) {
-            val fragment = fm.findFragmentByTag(tag)
-
-            if (fragment != null && fragment is DialogFragment && fragment.isAdded)
-                fragment.dismissAllowingStateLoss()
-        }
-    }
-
     protected fun setActionBar(toolbar: Toolbar, displayHomeAsUpEnabled: Boolean) {
         if (isBaseActivity) {
             (activity as BaseActivity).setSupportActionBar(toolbar)
@@ -128,29 +76,21 @@ class BaseFragment : Fragment() {
     }
 
     protected fun setActionBarDisplayTitleEnabled(displayTitle: Boolean) {
-        val actionBar = actionBar
         actionBar?.setDisplayShowTitleEnabled(displayTitle)
     }
 
     protected fun setActionBarBackButtonEnabled(displayButton: Boolean) {
-        val actionBar = actionBar
-        if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(displayButton)
-            actionBar.setDisplayHomeAsUpEnabled(displayButton)
-            actionBar.setDisplayShowHomeEnabled(displayButton)
-        }
+        actionBar?.setHomeButtonEnabled(displayButton)
+        actionBar?.setDisplayHomeAsUpEnabled(displayButton)
+        actionBar?.setDisplayShowHomeEnabled(displayButton)
     }
 
     protected fun setActionBarVisibility(visibility: Boolean) {
         if (activity != null) {
-            val actionBar = (activity as BaseActivity).supportActionBar
-
-            if (actionBar != null) {
-                if (visibility)
-                    actionBar.show()
-                else
-                    actionBar.hide()
-            }
+            if (visibility)
+                (activity as BaseActivity).supportActionBar?.show()
+            else
+                (activity as BaseActivity).supportActionBar?.hide()
         }
     }
 
@@ -159,29 +99,18 @@ class BaseFragment : Fragment() {
     }
 
     protected fun setActionBarTitle(title: String) {
-        val actionBar = actionBar
-
-        if (actionBar != null)
-            actionBar.title = title
+        actionBar?.title = title
     }
 
     fun enableToolbarBackPress(toolbar: Toolbar) {
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener {
-            if (activity != null)
-                activity!!.onBackPressed()
+            activity?.onBackPressed()
         }
     }
 
-    protected fun showDialogFragment(dialog: DialogFragment) {
-        if (isActivityValid && fragmentManager != null)
-            dialog.show(fragmentManager!!, dialog.javaClass.simpleName)
-    }
-
     fun dismissFragmentDialogs() {
-        val fragments = stackedFragments
-        if (fragments != null)
-            dismissInternal(fragments)
+        stackedFragments?.let { dismissInternal(it) }
     }
 
     private fun dismissInternal(fragments: List<Fragment>) {
