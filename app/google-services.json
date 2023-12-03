@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "229042961635",
+    "firebase_url": "https://plano-de-leitura.firebaseio.com",
+    "project_id": "plano-de-leitura",
+    "storage_bucket": "plano-de-leitura.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229042961635:android:f8fd05efb478a38897d9d6",
+        "android_client_info": {
+          "package_name": "br.com.planoleitura"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "229042961635-c8980edibgl6lilg0s3c7e0f9ci8bv90.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC_ln7e36oQpPaxdEglo1WJC8doVmHq2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "229042961635-c8980edibgl6lilg0s3c7e0f9ci8bv90.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
