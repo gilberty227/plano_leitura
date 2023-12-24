@@ -10,13 +10,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.planoleitura.ui.theme.PlanoDeLeituraTheme
+import br.com.planoleitura.ui.theme.MyPlanTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PlanoDeLeituraTheme {
+            MyPlanTheme {
 
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -41,7 +41,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    PlanoDeLeituraTheme {
+    MyPlanTheme {
         Greeting("Android")
     }
 }

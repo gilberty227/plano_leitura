@@ -13,7 +13,7 @@ data class Plan(
     val countChapterDay: Int
 ) {
 
-    var imgPlan: Map<Int, Int> = mutableMapOf(
+    /*var imgPlan: Map<Int, Int> = mutableMapOf(
         1 to R.drawable.ic_launcher_foreground,
         2 to R.drawable.ic_launcher_foreground,
         3 to R.drawable.ic_launcher_foreground,
@@ -27,5 +27,5 @@ data class Plan(
         3 to R.color.black,
         4 to R.color.black,
         5 to R.color.black,
-    )
+    )*/
 }
