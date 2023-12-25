@@ -1,83 +1,94 @@
 name: Android CI
-
-env:
-  # The name of the main module repository
-  main_project_module: app
-
-  # The name of the Play Store
-  playstore_name: My Plan
-
 on:
   push:
-    branches: [ "master" ]
+    branches: [ master ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
-  build:
-
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-    # Set Current Date As Env Variable
-    - name: Set current date as env variable
-      run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Upload html test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint.html
+          path: app/build/reports/lint-results-debug.html
 
-    # Set Repository Name As Env Variable
-    - name: Set repository name as env variable
-      run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+  unit-test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-    
-    - name: set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'zulu'
-        cache: gradle
+      - name: Run tests
+        run: ./gradlew test
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit_test_report
+          path: app/build/reports/tests/testDebugUnitTest/
 
-    # Run Tests Build
-    - name: Run gradle tests
-      run: ./gradlew test
-      
-    - name: Build with Gradle
-      run: ./gradlew build
+  instrumentation-test:
+    needs: [unit-test]
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-    # Create APK Debug
-    - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
-      run: ./gradlew assembleDebug
+      - name: Run espresso tests
+        uses: reactivecircus/android-emulator-runner@v3
+        with:
+          api-level: 33
+          script: ./gradlew connectedCheck
 
-    # Create APK Release
-    #- name: Build apk release project (APK) - ${{ env.main_project_module }} module
-    #  run: ./gradlew assemble
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: instrumentation_test_report
+          path: app/build/reports/androidTests/connected/
 
-    # Create Bundle AAB Release
-    # Noted for main module build [main_project_module]:bundleRelease
-    #- name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
-    #  run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+  static-code-analysis:
+    needs: [instrumentation-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-    # Upload Artifact Build
-    # Noted For Output [main_project_module]/build/outputs/apk/debug/
-    #- name: Upload APK Debug - ${{ env.repository_name }}
-    #  uses: actions/upload-artifact@v3
-    #  with:
-    #    name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) debug generated
-    #    path: ${{ env.main_project_module }}/build/outputs/apk/debug/
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
 
-    # Noted For Output [main_project_module]/build/outputs/apk/release/
-    #- name: Upload APK Release - ${{ env.repository_name }}
-    #  uses: actions/upload-artifact@v3
-    #  with:
-    #    name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) release generated
-    #    path: ${{ env.main_project_module }}/build/outputs/apk/release/
+      - name: SonarCloud Scan
+        run: ./gradlew app:sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # Noted For Output [main_project_module]/build/outputs/bundle/release/
-    #- name: Upload AAB (App Bundle) Release - ${{ env.repository_name }}
-    #  uses: actions/upload-artifact@v3
-    #  with:
-    #    name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
-    #    path: ${{ env.main_project_module }}/build/outputs/bundle/release/
+  package:
+    needs: [static-code-analysis]
+    name: Generate APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: expense-manager.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
